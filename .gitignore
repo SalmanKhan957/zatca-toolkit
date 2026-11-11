@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+# Downloaded third-party reference material: kept local, not redistributed
+reference-samples/*
+!reference-samples/SOURCES.md
+# Never commit real keys or certificates
+*.pem
+*.key
+secrets/

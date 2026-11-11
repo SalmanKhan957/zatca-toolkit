@@ -1,0 +1,61 @@
+{
+  "name": "zatca-toolkit",
+  "version": "0.1.0",
+  "description": "Generate, sign, validate and submit Saudi ZATCA (Fatoora) Phase 2 e-invoices in TypeScript. Runs in Node, browsers and edge workers.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "zatca",
+    "fatoora",
+    "e-invoicing",
+    "saudi-arabia",
+    "ubl",
+    "einvoice",
+    "vat",
+    "ksa"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --clean --sourcemap && tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@noble/curves": "^2.4.0",
+    "@noble/hashes": "^2.4.0",
+    "@xmldom/xmldom": "^0.9.12"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsup": "^9.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  },
+  "author": "Salman Mubashir",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SalmanKhan957/zatca-toolkit.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/SalmanKhan957/zatca-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/SalmanKhan957/zatca-toolkit/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

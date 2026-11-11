@@ -1,0 +1,15 @@
+{
+  "name": "zatca-toolkit-demo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Browser playground for zatca-toolkit: build, sign, validate and decode ZATCA e-invoices client-side.",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}

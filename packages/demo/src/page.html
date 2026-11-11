@@ -1,0 +1,285 @@
+<title>ZATCA Toolkit Playground</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Build, sign, validate and decode Saudi ZATCA (Fatoora) e-invoices in your browser with the open-source zatca-toolkit library.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  /* Layout: a clerk's desk. Header band with three tabs; each tab is a two-pane workspace
+     (what you enter on the left, what ZATCA would see on the right) that stacks on phones. */
+  :root {
+    --paper: #f4f7f5;
+    --surface: #ffffff;
+    --sunk: #eaf0ec;
+    --ink: #13221c;
+    --muted: #586a62;
+    --line: #d5e0da;
+    --accent: #0b6b4f;
+    --accent-ink: #ffffff;
+    --accent-soft: #dcefe6;
+    --ok: #1b7a4b;
+    --ok-soft: #e0f3e8;
+    --warn: #8a5a00;
+    --warn-soft: #fbf0d6;
+    --bad: #b42318;
+    --bad-soft: #fde7e4;
+    --focus: #0b6b4f;
+    --font-ui: "IBM Plex Sans", "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-ar: "IBM Plex Sans Arabic", "IBM Plex Sans", "Segoe UI", Tahoma, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    --step--1: 0.8125rem;
+    --step-0: 0.9375rem;
+    --step-1: 1.125rem;
+    --step-2: 1.5rem;
+    --radius: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0d1411; --surface: #131d19; --sunk: #0f1815; --ink: #e3ebe7; --muted: #93a49c; --line: #25332d;
+      --accent: #3db489; --accent-ink: #04140e; --accent-soft: #143a2d;
+      --ok: #52c98f; --ok-soft: #12301f; --warn: #e5b955; --warn-soft: #33270b; --bad: #f2867b; --bad-soft: #3a1714; --focus: #3db489;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0d1411; --surface: #131d19; --sunk: #0f1815; --ink: #e3ebe7; --muted: #93a49c; --line: #25332d;
+    --accent: #3db489; --accent-ink: #04140e; --accent-soft: #143a2d;
+    --ok: #52c98f; --ok-soft: #12301f; --warn: #e5b955; --warn-soft: #33270b; --bad: #f2867b; --bad-soft: #3a1714; --focus: #3db489;
+    color-scheme: dark;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--font-ui); font-size: var(--step-0); line-height: 1.5; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  h1, h2, h3 { text-wrap: balance; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+  p { margin: 0; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* ---- header ---- */
+  .top { background: var(--surface); border-bottom: 1px solid var(--line); }
+  .top .wrap { padding-block: 20px 0; display: grid; gap: 14px; }
+  .brand { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+  .brand h1 { font-size: var(--step-2); }
+  .brand .ar { font-family: var(--font-ar); color: var(--muted); font-size: var(--step-1); }
+  .lede { color: var(--muted); max-width: 70ch; }
+  .tabs { display: flex; gap: 4px; overflow-x: auto; }
+  .tab { appearance: none; border: 0; background: none; color: var(--muted); font: inherit; font-weight: 500; padding: 10px 14px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main.wrap { padding-block: 24px 40px; }
+  .pane-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 880px) { .pane-grid { grid-template-columns: minmax(0, 1fr); } }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 18px; min-width: 0; }
+  .panel h2 { font-size: var(--step-1); }
+  .hint { color: var(--muted); font-size: var(--step--1); }
+  .eyebrow { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
+
+  /* ---- forms ---- */
+  fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; min-width: 0; }
+  legend { font-weight: 600; padding: 0; margin-bottom: 4px; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .fields .wide { grid-column: 1 / -1; }
+  label { display: grid; gap: 4px; font-size: var(--step--1); color: var(--muted); font-weight: 500; min-width: 0; }
+  input, select, textarea { font: inherit; font-size: var(--step-0); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 7px 9px; min-width: 0; width: 100%; box-sizing: border-box; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+  input.mono, textarea.mono { font-family: var(--font-mono); font-size: var(--step--1); }
+  textarea { resize: vertical; }
+  .lines { display: grid; gap: 8px; }
+  .line-row { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+  @media (max-width: 520px) { .line-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .line-row .desc { grid-column: 1 / -1; } }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+  button.btn { appearance: none; font: inherit; font-weight: 500; border-radius: 4px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+  button.btn:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  button.primary:hover { filter: brightness(1.08); }
+  button.icon { padding: 7px 10px; color: var(--muted); }
+  .file { position: relative; overflow: hidden; }
+  .file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  /* ---- results ---- */
+  .status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: var(--step--1); padding: 4px 10px; border-radius: 999px; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .chip { font-family: var(--font-mono); font-size: 0.75rem; padding: 2px 7px; border-radius: 4px; background: var(--sunk); color: var(--muted); border: 1px solid var(--line); }
+
+  table.totals { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  table.totals td { padding: 7px 0; border-bottom: 1px solid var(--line); }
+  table.totals td:last-child { text-align: right; font-family: var(--font-mono); }
+  table.totals tr.grand td { font-weight: 600; border-bottom: 0; font-size: var(--step-1); }
+  .sar { color: var(--muted); font-size: var(--step--1); }
+
+  .qr-block { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 420px) { .qr-block { grid-template-columns: minmax(0, 1fr); } }
+  .qr-img { width: 148px; height: 148px; background: #ffffff; padding: 6px; border-radius: 4px; border: 1px solid var(--line); box-sizing: border-box; }
+  .qr-img svg { width: 100%; height: 100%; display: block; }
+  dl.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 12px; margin: 0; font-size: var(--step--1); }
+  dl.kv dt { color: var(--muted); }
+  dl.kv dd { margin: 0; font-family: var(--font-mono); overflow-wrap: anywhere; }
+
+  .code { position: relative; }
+  .code pre { margin: 0; max-height: 340px; overflow: auto; background: var(--sunk); border: 1px solid var(--line); border-radius: 4px; padding: 12px; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.55; white-space: pre; }
+  .code .copy { position: absolute; top: 8px; right: 8px; }
+
+  .findings { display: grid; gap: 10px; }
+  .finding { border: 1px solid var(--line); border-left: 4px solid var(--bad); border-radius: 4px; padding: 10px 12px; display: grid; gap: 4px; background: var(--surface); min-width: 0; }
+  .finding.warning { border-left-color: var(--warn); }
+  .finding .head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+  .finding .msg { font-weight: 500; }
+  .finding .ar { font-family: var(--font-ar); direction: rtl; text-align: right; color: var(--ink); }
+  .finding .detail { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); overflow-wrap: anywhere; }
+  .finding .fix { font-size: var(--step--1); color: var(--muted); }
+  .finding .fix b { color: var(--ink); font-weight: 500; }
+  ul.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: var(--step--1); }
+  ul.checks li { display: flex; gap: 8px; }
+  ul.checks .y { color: var(--ok); font-weight: 600; }
+  ul.checks .n { color: var(--bad); font-weight: 600; }
+
+  table.tags { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+  table.tags th { text-align: left; font-weight: 500; color: var(--muted); padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line); }
+  table.tags td { padding: 8px 8px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.tags td.v { font-family: var(--font-mono); overflow-wrap: anywhere; }
+  table.tags td.n { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+  .table-scroll { overflow-x: auto; }
+  .note { font-size: var(--step--1); color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+  .error-box { background: var(--bad-soft); color: var(--bad); border-radius: 4px; padding: 10px 12px; font-size: var(--step--1); }
+
+  footer .wrap { padding-block: 0 32px; color: var(--muted); font-size: var(--step--1); display: grid; gap: 6px; max-width: 1180px; }
+  @media (prefers-reduced-motion: no-preference) { .tab, button.btn { transition: color .15s, border-color .15s, background-color .15s; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1>ZATCA Toolkit Playground</h1>
+      <span class="ar" lang="ar">الفوترة الإلكترونية – المرحلة الثانية</span>
+    </div>
+    <p class="lede">Build, sign, validate and decode Saudi e-invoices with the open-source <code>zatca-toolkit</code> library. Everything runs in your browser; nothing is uploaded.</p>
+    <nav class="tabs" role="tablist" aria-label="Tools">
+      <button class="tab" role="tab" id="tab-btn-create" aria-controls="create" aria-selected="true" data-tab="create">Create invoice</button>
+      <button class="tab" role="tab" id="tab-btn-validate" aria-controls="validate" aria-selected="false" data-tab="validate">Validate XML</button>
+      <button class="tab" role="tab" id="tab-btn-qr" aria-controls="qr" aria-selected="false" data-tab="qr">Decode QR</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- CREATE -->
+  <section id="create" role="tabpanel" aria-labelledby="tab-btn-create">
+    <div class="pane-grid">
+      <form class="panel" id="create-form" novalidate>
+        <h2>Invoice details</h2>
+        <fieldset>
+          <legend>Document</legend>
+          <div class="fields">
+            <label>Type
+              <select id="f-kind">
+                <option value="simplified">Simplified (B2C, reported)</option>
+                <option value="standard">Standard (B2B, cleared)</option>
+              </select>
+            </label>
+            <label>Document
+              <select id="f-type">
+                <option value="invoice">Tax invoice (388)</option>
+                <option value="credit-note">Credit note (381)</option>
+                <option value="debit-note">Debit note (383)</option>
+              </select>
+            </label>
+            <label>Invoice number <input id="f-number" value="INV-2026-0001"></label>
+          </div>
+          <div class="fields" id="note-fields" hidden>
+            <label>Original invoice number <input id="f-billing" value="INV-2026-0000"></label>
+            <label>Reason <input id="f-reason" value="Goods returned"></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Seller</legend>
+          <div class="fields">
+            <label class="wide">Registered name <input id="f-seller-name" value="مؤسسة الواحة للبرمجيات | Al Waha Software Est."></label>
+            <label>VAT number <input id="f-seller-vat" class="mono" value="399999999900003" inputmode="numeric"></label>
+            <label>CR number <input id="f-seller-crn" class="mono" value="1010010000"></label>
+            <label>Street <input id="f-street" value="King Fahd Road"></label>
+            <label>Building no. <input id="f-building" class="mono" value="2322" inputmode="numeric"></label>
+            <label>District <input id="f-district" value="Al Olaya"></label>
+            <label>City <input id="f-city" value="Riyadh"></label>
+            <label>Postal code <input id="f-postal" class="mono" value="12211" inputmode="numeric"></label>
+          </div>
+        </fieldset>
+
+        <fieldset id="buyer-fields" hidden>
+          <legend>Buyer</legend>
+          <div class="fields">
+            <label class="wide">Registered name <input id="f-buyer-name" value="شركة الأفق التجارية | Al Ufuq Trading Co."></label>
+            <label>VAT number <input id="f-buyer-vat" class="mono" value="399999999800003" inputmode="numeric"></label>
+            <label>Street <input id="f-b-street" value="Salah Al-Din"></label>
+            <label>Building no. <input id="f-b-building" class="mono" value="1111"></label>
+            <label>District <input id="f-b-district" value="Al Murooj"></label>
+            <label>City <input id="f-b-city" value="Riyadh"></label>
+            <label>Postal code <input id="f-b-postal" class="mono" value="12222"></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Lines</legend>
+          <div class="lines" id="lines"></div>
+          <div class="row"><button type="button" class="btn" id="add-line">Add line</button></div>
+        </fieldset>
+
+        <div class="row">
+          <button type="submit" class="btn primary" id="build">Build and sign</button>
+          <span class="hint" id="chain-hint"></span>
+        </div>
+      </form>
+
+      <div class="panel" id="create-result" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- VALIDATE -->
+  <section id="validate" role="tabpanel" aria-labelledby="tab-btn-validate" hidden>
+    <div class="pane-grid">
+      <div class="panel">
+        <h2>Invoice XML</h2>
+        <p class="hint">Paste a ZATCA UBL invoice, credit note or debit note. Signed documents also get their hash, signature, XAdES digests and QR checked.</p>
+        <div class="row">
+          <button type="button" class="btn" id="load-good">Load signed example</button>
+          <button type="button" class="btn" id="load-bad">Load tampered example</button>
+          <span class="btn file">Open file…<input type="file" id="xml-file" accept=".xml,text/xml,application/xml"></span>
+        </div>
+        <label for="xml-input" class="eyebrow">XML</label>
+        <textarea id="xml-input" class="mono" rows="22" spellcheck="false"></textarea>
+      </div>
+      <div class="panel" id="validate-result" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- QR -->
+  <section id="qr" role="tabpanel" aria-labelledby="tab-btn-qr" hidden>
+    <div class="pane-grid">
+      <div class="panel">
+        <h2>QR payload</h2>
+        <p class="hint">Paste the base64 text inside a ZATCA QR code, or open a photo or screenshot of the QR.</p>
+        <div class="row">
+          <span class="btn file">Open QR image…<input type="file" id="qr-file" accept="image/*"></span>
+          <button type="button" class="btn" id="qr-phase1">Load Phase 1 example</button>
+        </div>
+        <label for="qr-input" class="eyebrow">Base64</label>
+        <textarea id="qr-input" class="mono" rows="8" spellcheck="false"></textarea>
+      </div>
+      <div class="panel" id="qr-result" aria-live="polite"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Invoices here are signed with a throwaway test certificate generated in your browser. ZATCA only accepts invoices signed with a certificate it issued through onboarding.</p>
+    <p>zatca-toolkit is MIT-licensed open source and is not affiliated with or endorsed by ZATCA. The validator is a pre-check of common rules, not ZATCA's official validator.</p>
+  </div>
+</footer>
+
+<!--CDN-->
+<!--APP-->

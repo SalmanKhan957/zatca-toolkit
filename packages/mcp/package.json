@@ -1,0 +1,54 @@
+{
+  "name": "zatca-toolkit-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Saudi ZATCA (Fatoora) e-invoicing: create, sign, validate, decode QR codes and explain errors from Claude, Cursor or any MCP client.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "zatca-toolkit-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "zatca",
+    "fatoora",
+    "e-invoicing",
+    "saudi-arabia",
+    "claude"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --clean --sourcemap",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zatca-toolkit": "^0.1.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsup": "^9.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  },
+  "author": "Salman Mubashir",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SalmanKhan957/zatca-toolkit.git",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://github.com/SalmanKhan957/zatca-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/SalmanKhan957/zatca-toolkit/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
