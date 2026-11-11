@@ -1,5 +1,7 @@
 # zatca-toolkit
 
+[![CI](https://github.com/SalmanKhan957/zatca-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/SalmanKhan957/zatca-toolkit/actions/workflows/ci.yml) [![npm](https://img.shields.io/npm/v/zatca-toolkit.svg)](https://www.npmjs.com/package/zatca-toolkit) [![license: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 **Generate, sign, validate and submit Saudi ZATCA (Fatoora) Phase 2 e-invoices in TypeScript, plus an MCP server so AI assistants can do it too.**
 
 Pure TypeScript: no OpenSSL, no Java, no temp files. Runs in Node, browsers and edge workers. MIT licensed.
