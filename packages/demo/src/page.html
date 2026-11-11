@@ -61,6 +61,10 @@
   .brand h1 { font-size: var(--step-2); }
   .brand .ar { font-family: var(--font-ar); color: var(--muted); font-size: var(--step-1); }
   .lede { color: var(--muted); max-width: 70ch; }
+  .links { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: var(--step--1); color: var(--muted); }
+  .links a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .links a:hover { text-decoration: underline; }
+  .links code { font-family: var(--font-mono); font-size: 0.8125rem; }
   .tabs { display: flex; gap: 4px; overflow-x: auto; }
   .tab { appearance: none; border: 0; background: none; color: var(--muted); font: inherit; font-weight: 500; padding: 10px 14px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
   .tab:hover { color: var(--ink); }
@@ -157,6 +161,7 @@
       <span class="ar" lang="ar">الفوترة الإلكترونية – المرحلة الثانية</span>
     </div>
     <p class="lede">Build, sign, validate and decode Saudi e-invoices with the open-source <code>zatca-toolkit</code> library. Everything runs in your browser; nothing is uploaded.</p>
+    <p class="links"><a href="https://github.com/SalmanKhan957/zatca-toolkit">Source on GitHub</a><span aria-hidden="true">·</span><a href="https://www.npmjs.com/package/zatca-toolkit"><code>npm install zatca-toolkit</code></a><span aria-hidden="true">·</span><a href="https://www.npmjs.com/package/zatca-toolkit-mcp">MCP server for Claude and Cursor</a></p>
     <nav class="tabs" role="tablist" aria-label="Tools">
       <button class="tab" role="tab" id="tab-btn-create" aria-controls="create" aria-selected="true" data-tab="create">Create invoice</button>
       <button class="tab" role="tab" id="tab-btn-validate" aria-controls="validate" aria-selected="false" data-tab="validate">Validate XML</button>

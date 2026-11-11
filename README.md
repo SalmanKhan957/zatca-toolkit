@@ -4,6 +4,8 @@
 
 **Generate, sign, validate and submit Saudi ZATCA (Fatoora) Phase 2 e-invoices in TypeScript, plus an MCP server so AI assistants can do it too.**
 
+**[Try it in your browser →](https://salmankhan957.github.io/zatca-toolkit/)** Build, sign, validate and decode invoices client-side; nothing is uploaded.
+
 Pure TypeScript: no OpenSSL, no Java, no temp files. Runs in Node, browsers and edge workers. MIT licensed.
 
 > ZATCA's Wave 25 brings every VAT-registered business with revenue above SAR 187,500 into Phase 2 integration by **1 February 2027**. This library is for the developers wiring that up.
@@ -147,7 +149,7 @@ Then ask: *"Create a simplified invoice for 2 hours of consulting at 250 SAR"*, 
 
 ## Browser playground
 
-`packages/demo` is a single-page playground that builds, signs, validates and decodes invoices entirely client-side (it shows the library running in a browser). It signs with a throwaway test certificate generated in the page.
+`packages/demo` is the [live playground](https://salmankhan957.github.io/zatca-toolkit/): a single page that builds, signs, validates and decodes invoices entirely client-side (it shows the library running in a browser). It signs with a throwaway test certificate generated in the page.
 
 ```bash
 npm run build -w zatca-toolkit-demo         # -> packages/demo/dist/index.html (one self-contained file)
